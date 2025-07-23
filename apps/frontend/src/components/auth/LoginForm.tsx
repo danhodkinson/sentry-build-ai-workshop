@@ -58,14 +58,7 @@ const LoginForm: React.FC = () => {
     setIsLoading(true);
   
     try {
-<<<<<<< Updated upstream
-      const userCredentials = fetchSSOUserCredentials(provider);
-      const loginSignature = createAuthenticationToken(userCredentials, provider);
-      
-      // TOFIX Module 1: SSO Login with missing login signature
-      await ssoLogin(provider, loginSignature);
-      
-=======
+
       await Sentry.startSpan(
         {
           name: 'sso.authentication.frontend',
@@ -102,7 +95,6 @@ const LoginForm: React.FC = () => {
         }
       );
   
->>>>>>> Stashed changes
       navigate('/');
     } catch (err: any) {
       logger.error(
