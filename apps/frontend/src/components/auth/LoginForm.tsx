@@ -59,7 +59,7 @@ const LoginForm: React.FC = () => {
       const loginSignature = createAuthenticationToken(userCredentials, provider);
       
       // TOFIX Module 1: SSO Login with missing login signature
-      await ssoLogin(provider);
+      await ssoLogin(provider, loginSignature);
       
       navigate('/');
 
