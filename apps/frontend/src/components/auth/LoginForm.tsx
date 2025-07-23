@@ -1,9 +1,12 @@
+import * as Sentry from '@sentry/react';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { GithubIcon, FileIcon as GoogleIcon, EyeIcon, EyeOffIcon } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { Button } from '../ui/Button';
 import { fetchSSOUserCredentials, createAuthenticationToken } from '../../utils/fakeUserGenerator';
+
+const { logger } = Sentry;
 
 const SSOButton: React.FC<{
   icon: React.ReactNode;
@@ -53,17 +56,58 @@ const LoginForm: React.FC = () => {
   const handleSSO = async (provider: string) => {
     setError('');
     setIsLoading(true);
-
+  
     try {
+<<<<<<< Updated upstream
       const userCredentials = fetchSSOUserCredentials(provider);
       const loginSignature = createAuthenticationToken(userCredentials, provider);
       
       // TOFIX Module 1: SSO Login with missing login signature
       await ssoLogin(provider, loginSignature);
       
+=======
+      await Sentry.startSpan(
+        {
+          name: 'sso.authentication.frontend',
+          op: 'auth.sso',
+          attributes: {
+            'auth.provider': provider,
+          },
+        },
+        async (span) => {
+          const userCredentials = fetchSSOUserCredentials(provider);
+  
+          logger.info(
+            logger.fmt`Logging user ${userCredentials.email} in using ${provider}`
+          );
+  
+          span.setAttributes({
+            'auth.user.id': userCredentials.id,
+            'auth.user.email': userCredentials.email,
+            'auth.user.name': userCredentials.name,
+            'auth.user.avatar': userCredentials.avatar,
+          });
+  
+          const loginSignature = createAuthenticationToken(
+            userCredentials,
+            provider
+          );
+  
+          span.setAttributes({
+            'auth.login_signature.defined':
+              loginSignature !== undefined && loginSignature !== null,
+          });
+  
+          await ssoLogin(provider);
+        }
+      );
+  
+>>>>>>> Stashed changes
       navigate('/');
-
     } catch (err: any) {
+      logger.error(
+        logger.fmt`Failed to login with ${provider} - issue with loginSignature`
+      );
       setError(`Failed to login with ${provider} - issue with loginSignature`);
       throw err;
     } finally {

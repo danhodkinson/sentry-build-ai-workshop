@@ -1,3 +1,5 @@
+import './src/instrument';
+import * as Sentry from '@sentry/node';
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
@@ -48,6 +50,9 @@ app.use('/api', searchRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api', chatRoutes);
 app.use('/api', aiRoutes);
+
+
+Sentry.setupExpressErrorHandler(app);
 
 // Error handling middleware
 // @ts-expect-error - implicit any

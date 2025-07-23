@@ -1,6 +1,9 @@
 import 'dotenv/config';
 import esbuild from 'esbuild';
 
+const { sentryEsbuildPlugin } = require("@sentry/esbuild-plugin");
+
+
 esbuild.build({
   entryPoints: ['index.ts'],
   sourcemap: true,
@@ -11,5 +14,12 @@ esbuild.build({
   outdir: 'dist',
   allowOverwrite: true,
   external: ['express', 'drizzle-orm', 'pg'],
-  plugins:[]
+  plugins:[
+    sentryEsbuildPlugin({
+      authToken: process.env.SENTRY_AUTH_TOKEN,
+      org: "smellie",
+      project: "sentry-workshop-server",
+    }),
+  ]
 });
+
